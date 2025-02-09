@@ -1,104 +1,86 @@
-import React, { useState } from "react";
-import { Seminar } from "../../model/types";
-//import "./modal.css"; // Adjust the relative path as needed
+import { Modal, Form, Input, DatePicker, TimePicker } from "antd";
+import { Seminar } from "@features/seminarList";
+import dayjs from "dayjs";
 
 interface EditSeminarModalProps {
   seminar: Seminar;
   onSave: (updatedSeminar: Seminar) => void;
   onCancel: () => void;
+  visible: boolean;
 }
 
-export const EditSeminarModal: React.FC<EditSeminarModalProps> = ({
-  seminar,
-  onSave,
-  onCancel,
-}) => {
-  const [formData, setFormData] = useState<Seminar>(seminar);
+export const EditSeminarModal = (props: EditSeminarModalProps) => {
+  const { seminar, onSave, onCancel, visible } = props;
+  const [form] = Form.useForm();
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    onSave(formData);
+  const handleOk = () => {
+    form.validateFields().then((values) => {
+      const updatedSeminar: Seminar = {
+        ...seminar,
+        ...values,
+        date: values.date.format("DD.MM.YYYY"),
+        time: values.time.format("HH:mm"),
+      };
+      onSave(updatedSeminar);
+    });
   };
 
   return (
-    <div className="modal-overlay">
-      <div className="modal-content">
-        <h2>Edit Seminar</h2>
-        <form onSubmit={handleSubmit}>
-          <div>
-            <label htmlFor="title">Title:</label>
-            <input
-              id="title"
-              type="text"
-              name="title"
-              value={formData.title}
-              onChange={handleChange}
-              required
-            />
-          </div>
+    <Modal
+      title="Edit Seminar"
+      open={visible}
+      onOk={handleOk}
+      onCancel={onCancel}
+    >
+      <Form
+        form={form}
+        layout="vertical"
+        initialValues={{
+          ...seminar,
+          date: dayjs(seminar.date, "DD.MM.YYYY"),
+          time: dayjs(seminar.time, "HH:mm"),
+        }}
+      >
+        <Form.Item
+          name="title"
+          label="Title"
+          rules={[{ required: true, message: "Please input the title!" }]}
+        >
+          <Input />
+        </Form.Item>
 
-          <div>
-            <label htmlFor="description">Description:</label>
-            <textarea
-              id="description"
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              required
-            />
-          </div>
+        <Form.Item
+          name="description"
+          label="Description"
+          rules={[{ required: true, message: "Please input the description!" }]}
+        >
+          <Input.TextArea />
+        </Form.Item>
 
-          <div>
-            <label htmlFor="date">Date:</label>
-            <input
-              id="date"
-              type="text"
-              name="date"
-              value={formData.date}
-              onChange={handleChange}
-              required
-            />
-          </div>
+        <Form.Item
+          name="date"
+          label="Date"
+          rules={[{ required: true, message: "Please select the date!" }]}
+        >
+          <DatePicker format="DD.MM.YYYY" />
+        </Form.Item>
 
-          <div>
-            <label htmlFor="time">Time:</label>
-            <input
-              id="time"
-              type="text"
-              name="time"
-              value={formData.time}
-              onChange={handleChange}
-              required
-            />
-          </div>
+        <Form.Item
+          name="time"
+          label="Time"
+          rules={[{ required: true, message: "Please select the time!" }]}
+        >
+          <TimePicker format="HH:mm" />
+        </Form.Item>
 
-          <div>
-            <label htmlFor="photo">Photo URL:</label>
-            <input
-              id="photo"
-              type="text"
-              name="photo"
-              value={formData.photo}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div className="modal-actions">
-            <button type="submit">Save</button>
-            <button type="button" onClick={onCancel}>
-              Cancel
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+        <Form.Item
+          name="photo"
+          label="Photo URL"
+          rules={[{ required: true, message: "Please input the photo URL!" }]}
+        >
+          <Input />
+        </Form.Item>
+      </Form>
+    </Modal>
   );
 };
