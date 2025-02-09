@@ -1,9 +1,9 @@
-import { SeminarList } from "./features/seminarList/ui/SeminarList";
+import { SeminarList } from "@features/seminarList/ui/SeminarList/SeminarList";
+import "@ant-design/v5-patch-for-react-19";
 
 function App() {
   return (
     <div className="App">
-      <h1>Seminar Management</h1>
       <SeminarList />
     </div>
   );

@@ -1,5 +1,5 @@
-import { baseApi } from "../../../shared/api/baseApi";
-import { Seminar } from "../model/types";
+import { baseApi } from "@shared/api";
+import { Seminar } from "@features/seminarList/model/types";
 
 export const editSeminar = async (
   id: number,
